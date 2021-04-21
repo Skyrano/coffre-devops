@@ -1,0 +1,21 @@
+    // ATTENTION : mettre chaque partie en Base64URL
+
+    { //Header
+        "alg": "HS256", //Type d'algo de chiffrement
+        "typ": "JWT" // type de jeton
+    }, { //payload
+
+        "sub": "1234567890",
+        "iat": "",
+        "exp": "25/02/1999 18:52:30",
+        "name": "John Doe",
+        "email": "tortueninja69",
+        "ressourcePartagee": "acces"
+
+
+    }, {
+        HMACSHA256(
+            base64UrlEncode(header) + "." +
+            base64UrlEncode(payload),
+            secret)
+    }

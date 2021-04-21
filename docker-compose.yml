@@ -1,0 +1,35 @@
+version: "3.3"  # optional since v1.27.0
+services:
+    serveurjwt:
+        build: ./JWT
+        expose:
+          - "5835"
+          - "5735"
+        networks:
+          internalNetwork:
+            ipv4_address: 10.10.10.2
+    ressourceprotegee:
+        build: ./RessourceProtegee
+        expose:
+          - "5001"
+        networks: 
+          internalNetwork:
+            ipv4_address: 10.10.10.3
+    frontend:
+        build: ./Frontend
+        ports:
+          - "5000:5000"
+        networks:
+          internalNetwork:
+            ipv4_address: 10.10.10.4
+    db:
+        build: ./db
+        networks:
+          internalNetwork:
+            ipv4_address: 10.10.10.5
+networks:
+    internalNetwork:
+      driver: bridge
+      ipam: 
+        config: 
+          - subnet: 10.10.10.0/24
