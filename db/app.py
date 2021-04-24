@@ -1,5 +1,5 @@
 import pymongo
-from flask import Flask, request
+from flask import Flask, request, redirect
 import zmq
 
 """
@@ -67,7 +67,7 @@ class WebDatabase:
     def fetch(self, username, password):
         user = self.db.get_user(username, password)
         if user:
-            return self.fetch_token(user)
+            return  self.fetch_token(user)
 
     def fetch_token(self, user):
         token = None
@@ -100,8 +100,8 @@ def user_exists():
         response = db.fetch(identifiant, mdp)
         # print(response)
         if response == None:
-            return "None"
-        return response
+            return redirect("http://10.10.10.4:5000/verifConnexion?userExists=0&token")
+        return redirect("http://10.10.10.4:5000/verifConnexion?userExists=1&token="+response)
 
 @app.route('/inscrire/', methods=['POST'])
 def inscrireUser():
@@ -113,4 +113,4 @@ def inscrireUser():
     return token
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0", port=5002)

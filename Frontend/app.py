@@ -53,7 +53,7 @@ def verifConnexion():
     print(verif,token)
     if 1==int(verif) and token!=None:
         request.headers["Token"]=token
-        return redirect("http://10.10.10.3:5001/") #Mettre ici l'adresse d'Edouard
+        return redirect("http://projet_ressourceprotegee:5001/") #Mettre ici l'adresse d'Edouard
     else:
         return redirect(url_for('connexion'))
 
@@ -74,4 +74,4 @@ def inscription():
         return render_template("inscription.html", title="Inscription", form=form)
 
 if __name__ == '__main__':
-    app.run(debug=True,host='0.0.0.0')
+    app.run(debug=True, host="0.0.0.0", port=5000)

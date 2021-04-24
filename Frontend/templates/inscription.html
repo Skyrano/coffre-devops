@@ -1,21 +1,17 @@
-{% extends "base.html" %}
-{% block main %}
-<form method="POST" action="http://10.10.10.5/inscrire/"> <!-- Lien à changer en fonction de l'adresse IP -->
+{% extends "base.html" %} {% block main %}
+<form method="POST" action="http://projet_db:5000/inscrire/">
+    <!-- Lien à changer en fonction de l'adresse IP -->
     {{form.csrf_token }}
     <div class="mb-3">
-        {{form.identifiant.label(class="form-label")}}
-        {{form.identifiant(class="form-control")}}
+        {{form.identifiant.label(class="form-label")}} {{form.identifiant(class="form-control")}}
     </div>
     <div class="mb-3">
-        {{form.mail.label(class="form-label")}}
-        {{form.mail(class="form-control")}}
+        {{form.mail.label(class="form-label")}} {{form.mail(class="form-control")}}
     </div>
     <div class="mb-3">
-        {{form.mdp.label(class="form-label")}}
-        {{form.mdp(class="form-control")}}
+        {{form.mdp.label(class="form-label")}} {{form.mdp(class="form-control")}}
     </div>
-    <br>
-    {{form.submit(class="btn btn-primary")}}
-  </form>
+    <br> {{form.submit(class="btn btn-primary")}}
+</form>
 
 {% endblock %}
