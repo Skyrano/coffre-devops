@@ -1,8 +1,9 @@
-import flask
+from flask import Flask, render_template, request, redirect, url_for
 import zmq
 import webbrowser
+import socket as sock
 
-app = flask.Flask(__name__)
+app = Flask(__name__)
 
 context = zmq.Context()
 
@@ -29,7 +30,7 @@ def sendToken(token):
     print("Connecting to the server qui claque")
 
     socket = context.socket(zmq.REQ)
-    socket.connect("tcp://localhost:5735")
+    socket.connect("tcp://serveurjwt:5735")
 
     # envoi du token
     socket.send_string(token)
@@ -38,19 +39,32 @@ def sendToken(token):
     if(socket.recv_string() == "True"):
         webbrowser.open(Amouranth(), 1) 
         return Amouranth()
-    
+
     webbrowser.open("https://www.youtube.com/watch?v=dQw4w9WgXcQ", 1) 
     return "Wrong creadz CHEH"
+
+def verifyToken(token):
+    socket = context.socket(zmq.REQ)
+    address = sock.gethostbyname('serveurjwt')
+    socket.connect("tcp://"+address+":5735")
+
+    # envoi du token
+    socket.send_string(token)
+
+    # recuperation de la réponse du serveur
+    response = socket.recv_string()
+    if(response == "True"):
+       return Amouranth()
+    return "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
 
 """
 La fonction qui permet de récupérer le token
 """
-@app.route('/', methods=['GET'])
+@app.route('/ressource', methods=['GET'])
 def getToken():
-    token = str(flask.request.headers.get("Token"))
-
-    # Envoie du token à la vérification
-    sendToken(token)
+    token = request.args["Token"]
+    # Envoi du token à la vérification
+    return verifyToken(token)
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5001)
+    app.run(debug=True, host='0.0.0.0', port=5001)

@@ -3,4 +3,5 @@ flask_bootstrap
 flask_wtf
 wtforms
 email_validator
+requests
 

@@ -1,5 +1,5 @@
 {% extends "base.html" %} {% block main %}
-<form method="POST" action="http://10.10.10.5:5002/check-user/">
+<form method="POST" action="http://localhost:5000/connect">
     <!-- Lien à changer en fonction de l'adresse IP -->
     {{form.csrf_token }}
     <div>

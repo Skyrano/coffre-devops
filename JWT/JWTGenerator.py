@@ -19,8 +19,3 @@ def verifJWT(token):
         return jwt.decode(token, key, algorithms=["HS256"]) != None
     except:
         return False
-
-
-print(verifJWT(getJWT("n","n","n")))
-
-print(verifJWT("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI4MjE4OTExODQiLCJpYXQiOiIxNjU2NTk4OTU2ODkiLCJleHAiOiIxNjE4MjQzMjU5IiwibmFtZSI6Im5vZ2ZkaGduamgsaGdmZGJoZ25qLGhuZ2Jmbmh0LGp5aG50Z2JmaG5naixoaGduZmJuaixrO3VqaGdubixqaztubW9tIiwiZW1haWwiOiJuIiwicmVzc291cmNlUGFydGFnZWUiOiJoZ2osaztsamgsZ25mYnZkbiJ9.PKZxoRRJU2rkWUETVHuoypXXEI8d1rN8uWMCp_XoiVs"))

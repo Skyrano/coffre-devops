@@ -2,6 +2,7 @@ import zmq
 import threading
 import JWTGenerator as gen
 import time
+import socket as sock
 
 class Serveur (threading.Thread):
     def __init__(self, port):
@@ -9,14 +10,12 @@ class Serveur (threading.Thread):
         self.port = port
     
     def run(self):
+        host_ip = sock.gethostbyname('serveurjwt')
         context = zmq.Context()
         socket = context.socket(zmq.REP)
-        socket.bind("tcp://127.0.0.1:"+str(self.port))
-
+        socket.bind("tcp://"+host_ip+":"+str(self.port))
         message = socket.recv_string()
         while message!="stop":
-            print(message)
-
             time.sleep(1)
             if self.port ==5835: 
                 parts = message.split(";")
@@ -25,7 +24,6 @@ class Serveur (threading.Thread):
                 else:
                     socket.send_string(str(gen.getJWT(parts[0], parts[1], parts[2])))
             if self.port==5735:
-               # socket.send_string(str(gen.verifJWT(message)))
                socket.send_string(str(gen.verifJWT(message)))
             message = socket.recv_string()
         socket.close()

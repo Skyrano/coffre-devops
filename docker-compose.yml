@@ -5,37 +5,16 @@ services:
       expose:
         - "5835"
         - "5735"
-      networks:
-        internalNetwork:
-            ipv4_address: "10.10.10.2"
     ressourceprotegee:
       build: ./RessourceProtegee
       expose:
-        - "5001"  
-      networks: 
-        internalNetwork:
-            ipv4_address: "10.10.10.3"
+        - "5001"
     frontend:
       build: ./Frontend
       ports:
         - "5000:5000"
-      networks:
-        internalNetwork:
-            ipv4_address: "10.10.10.4"
-
     db:
       build: ./db
-      ports:
-        - "5002:5002"
-      networks:
-        internalNetwork:
-            ipv4_address: "10.10.10.5"
-networks:
-    internalNetwork:
-      driver: bridge
-      ipam:
-        driver: default
-        config:
-          - subnet: 10.10.10.0/24
-            gateway: 10.10.10.1
-        
+      expose:
+        - "5002"
+        - "27017"

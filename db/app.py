@@ -74,7 +74,7 @@ class WebDatabase:
         context = zmq.Context()
         print("Connecting to server…")
         socket = context.socket(zmq.REQ)
-        socket.connect("tcp://10.10.10.2:5835")
+        socket.connect("tcp://serveurjwt:5835")
         token = "TOKEN"
         socket.send_string(f"""nom={user.username}""")
         socket.send_string(f"""email={user.email}""")
@@ -89,21 +89,19 @@ class WebDatabase:
 app = Flask(__name__)
 
 
-@app.route('/check-user/', methods=['POST'])
+@app.route('/check-user', methods=['GET'])
 def user_exists():
-    if request.method == 'POST':
-        identifiant = request.form['identifiant']
-        mdp = request.form['mdp']
-        print(identifiant)
-        print(mdp)
-        db = WebDatabase()
-        response = db.fetch(identifiant, mdp)
-        # print(response)
-        if response == None:
-            return redirect("http://10.10.10.4:5000/verifConnexion?userExists=0&token")
-        return redirect("http://10.10.10.4:5000/verifConnexion?userExists=1&token="+response)
+    identifiant = request.args['identifiant']
+    mdp = request.args['mdp']
+    print(identifiant)
+    print(mdp)
+    return "123456789"
+    #db = WebDatabase()
+    #response = db.fetch(identifiant, mdp)
+    #return response
+        
 
-@app.route('/inscrire/', methods=['POST'])
+@app.route('/inscrire', methods=['POST'])
 def inscrireUser():
     identifiant = request.form['identifiant']
     email = request.form['email']

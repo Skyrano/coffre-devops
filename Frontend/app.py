@@ -6,6 +6,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Email
 
+import requests as rqst
 import os
 SECRET_KEY = os.urandom(32)
 
@@ -52,10 +53,22 @@ def verifConnexion():
     token=request.args["token"]
     print(verif,token)
     if 1==int(verif) and token!=None:
-        request.headers["Token"]=token
-        return redirect("http://projet_ressourceprotegee:5001/") #Mettre ici l'adresse d'Edouard
+        parameters = {'Token':token}
+        response = rqst.get('http://ressourceprotegee:5001/ressource',params=parameters)
+        return redirect(response.text)
     else:
         return redirect(url_for('connexion'))
+
+@app.route('/connect', methods=['POST'])
+def connect():
+    identifiant=request.form["identifiant"]
+    mdp=request.form["mdp"]
+    print(identifiant,mdp)
+    parameters = {'identifiant':identifiant,'mdp':mdp}
+    response = rqst.get('http://db:5002/check-user',params=parameters)
+    if response == None:
+        return redirect("http://localhost:5000/verifConnexion?userExists=0&token")
+    return redirect("http://localhost:5000/verifConnexion?userExists=1&token=x"+response.text)
 
 
 @app.route('/inscription', methods=['GET', 'POST'])
