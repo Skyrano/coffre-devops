@@ -32,26 +32,15 @@ class Inscription(FlaskForm):
 def index():
     return render_template("accueil.html", title="Accueil")
 
-@app.route('/connexion', methods=['GET', 'POST'])
+@app.route('/connexion', methods=['GET'])
 def connexion():
     form=Connexion(request.form)
-    if form.validate_on_submit():
-        print("ok")
-        identifiant = form.identifiant.data
-        mdp = form.mdp.data
-        res=True #modifier par recup de Baptiste
-        if res==False:
-            return render_template("connexion.html", title="Connexion", form=form)
-        else:
-            return "identifiant: "+identifiant+" mdp:"+mdp+" à envoyer à Baptiste"
-    else:
-        return render_template("connexion.html", title="Connexion", form=form)
+    return render_template("connexion.html", title="Connexion", form=form)
 
 @app.route('/verifConnexion', methods=['GET'])
 def verifConnexion():
     verif=request.args["userExists"]
     token=request.args["token"]
-    print(verif,token)
     if 1==int(verif) and token!=None:
         parameters = {'Token':token}
         response = rqst.get('http://ressourceprotegee:5001/ressource',params=parameters)
@@ -63,26 +52,26 @@ def verifConnexion():
 def connect():
     identifiant=request.form["identifiant"]
     mdp=request.form["mdp"]
-    print(identifiant,mdp)
     parameters = {'identifiant':identifiant,'mdp':mdp}
     response = rqst.get('http://db:5002/check-user',params=parameters)
-    if response == None:
+    if response.text == "notoken":
         return redirect("http://localhost:5000/verifConnexion?userExists=0&token")
-    return redirect("http://localhost:5000/verifConnexion?userExists=1&token=x"+response.text)
+    return redirect("http://localhost:5000/verifConnexion?userExists=1&token="+response.text)
 
 
 @app.route('/inscription', methods=['GET', 'POST'])
 def inscription():
     form=Inscription(request.form)
-    if form.validate_on_submit():
-        identifiant = form.identifiant.data
-        mail = form.mail.data
-        mdp = form.mdp.data
-        res=True #modifier par recup de Baptiste
-        if res==False:
+    identifiant = form.identifiant.data
+    mail = form.mail.data
+    mdp = form.mdp.data
+    if identifiant and mail and mdp:
+        parameters = {'identifiant':identifiant, 'email': mail, 'mdp': mdp}
+        res = rqst.post('http://db:5002/inscrire',data=parameters)
+        if res.text==False:
             return render_template("inscription.html", title="Inscription", form=form)
         else:
-            return "identifiant: "+identifiant+" mail:"+mail+" mdp:"+mdp+" à envoyer à Baptiste"
+            return render_template("inscriptionReussie.html", title="Inscription réussie")
     else:
         return render_template("inscription.html", title="Inscription", form=form)
 

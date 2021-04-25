@@ -1,6 +1,9 @@
 import pymongo
 from flask import Flask, request, redirect
 import zmq
+import socket as sock
+
+context = zmq.Context()
 
 """
 nom;email;acces
@@ -62,43 +65,36 @@ class WebDatabase:
         user.password = password
         user.email = email
         self.db.create_user(user)
-        return self.fetch_token(user)
+        return True
+        #print("fetch token")
+        #return self.fetch_token(user)
 
     def fetch(self, username, password):
         user = self.db.get_user(username, password)
-        if user:
-            return  self.fetch_token(user)
+        if user != None:
+            return self.fetch_token(user)
+        return "notoken"
 
     def fetch_token(self, user):
-        token = None
-        context = zmq.Context()
-        print("Connecting to server…")
         socket = context.socket(zmq.REQ)
-        socket.connect("tcp://serveurjwt:5835")
-        token = "TOKEN"
-        socket.send_string(f"""nom={user.username}""")
-        socket.send_string(f"""email={user.email}""")
-        socket.send_string(f"""acces={user.access}""")
+        address = sock.gethostbyname('serveurjwt')
+        socket.connect("tcp://"+address+":5835")
+        token = "notoken"
+        socket.send_string(user.username+";"+user.email+";"+user.access)
         #  Get the reply.
-        message = socket.recv()
-        token = message
-        print("Received reply %s [ %s ]" % (request, message))
-        socket.send_string("stop")
+        token = socket.recv()
         return token
 
 app = Flask(__name__)
-
 
 @app.route('/check-user', methods=['GET'])
 def user_exists():
     identifiant = request.args['identifiant']
     mdp = request.args['mdp']
-    print(identifiant)
-    print(mdp)
-    return "123456789"
-    #db = WebDatabase()
-    #response = db.fetch(identifiant, mdp)
-    #return response
+    address = sock.gethostbyname('mongodb')
+    db = WebDatabase(address, 27017)
+    response = db.fetch(identifiant, mdp)
+    return response
         
 
 @app.route('/inscrire', methods=['POST'])
@@ -106,9 +102,10 @@ def inscrireUser():
     identifiant = request.form['identifiant']
     email = request.form['email']
     mdp = request.form['mdp']
-    db = WebDatabase()
-    token = db.insert(identifiant, mdp, email)
-    return token
+    address = sock.gethostbyname('mongodb')
+    db = WebDatabase(address, 27017)
+    response = db.insert(identifiant, mdp, email)
+    return str(response)
 
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0", port=5002)

@@ -17,7 +17,7 @@ class Serveur (threading.Thread):
         message = socket.recv_string()
         while message!="stop":
             time.sleep(1)
-            if self.port ==5835: 
+            if self.port ==5835:
                 parts = message.split(";")
                 if len(parts) != 3:
                     socket.send_string(None)

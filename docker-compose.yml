@@ -17,4 +17,7 @@ services:
       build: ./db
       expose:
         - "5002"
+    mongodb:
+      image: mongo:latest
+      expose:
         - "27017"
